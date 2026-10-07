@@ -1,0 +1,22 @@
+---
+import DiamondPlot from "../../../components/DiamondPlot.astro";
+import Layout from "../../../layouts/Layout.astro";
+import { dimensions, getValues, slugify } from "../../../data/diamonds";
+
+export function getStaticPaths() {
+  return dimensions.flatMap((dimension) =>
+    getValues(dimension).map((value) => ({
+      params: { dimension: dimension.key, value: slugify(value) },
+      props: { dimension, value },
+    })),
+  );
+}
+
+const { dimension, value } = Astro.props;
+---
+
+<Layout title={`Diamants, ${dimension.label.toLowerCase()} ${value}`}>
+  <h1>Diamants, {dimension.label.toLowerCase()} {value}</h1>
+  <DiamondPlot dimension={dimension} value={value} />
+  <p><a href={`/diamonds/${dimension.key}`}>Retour à la liste</a></p>
+</Layout>

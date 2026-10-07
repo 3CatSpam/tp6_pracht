@@ -1,0 +1,56 @@
+---
+import PenguinPlot from "../../components/PenguinPlot.astro";
+import Layout from "../../layouts/Layout.astro";
+import penguins from "../../assets/penguins.json";
+
+const speciesList = [...new Set(penguins.map(({ species }) => species))];
+---
+
+<Layout title="Graphiques de tous les manchots">
+  <h1>Graphiques de tous les manchots</h1>
+
+  <nav aria-label="Espèces">
+    <ul>
+      {
+        speciesList.map((species) => (
+          <li>
+            <a href={`#${species.toLowerCase()}`}>{species}</a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+
+  <div class="slider" role="region" aria-label="Graphiques par espèce" tabindex="0">
+    {
+      speciesList.map((species) => (
+        <section class="slide" id={species.toLowerCase()} aria-label={`Espèce ${species}`}>
+          <PenguinPlot species={species} />
+        </section>
+      ))
+    }
+  </div>
+
+  <p><a href="/penguins">Retour à la liste des espèces</a></p>
+</Layout>
+
+<style>
+  nav ul {
+    display: flex;
+    gap: 1rem;
+    list-style: none;
+    padding: 0;
+  }
+
+  .slider {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+  }
+
+  .slide {
+    flex: 0 0 100%;
+    scroll-snap-align: start;
+  }
+</style>

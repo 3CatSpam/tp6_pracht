@@ -1,0 +1,18 @@
+---
+import PenguinPlot from "../../components/PenguinPlot.astro";
+import Layout from "../../layouts/Layout.astro";
+import penguins from "../../assets/penguins.json";
+
+export function getStaticPaths() {
+  const speciesList = [...new Set(penguins.map(({ species }) => species))];
+  return speciesList.map((species) => ({ params: { species } }));
+}
+
+const { species } = Astro.params;
+---
+
+<Layout title={`Manchots ${species}`}>
+  <h1>Manchots {species}</h1>
+  <PenguinPlot species={species} />
+  <p><a href="/penguins">Retour à la liste des espèces</a></p>
+</Layout>

@@ -1,0 +1,62 @@
+---
+import * as Plot from "@observablehq/plot";
+import penguins from "../assets/penguins.json";
+import PlotFigure from "./PlotFigure.astro";
+
+const { species } = Astro.props;
+
+const speciesPenguins = penguins.filter((penguin) => penguin.species === species);
+const measured = speciesPenguins.filter(
+  (penguin) => penguin.culmen_length_mm !== null && penguin.culmen_depth_mm !== null,
+);
+const lengths = measured.map((penguin) => penguin.culmen_length_mm as number);
+const depths = measured.map((penguin) => penguin.culmen_depth_mm as number);
+const range = (values: number[]) => `${Math.min(...values)} à ${Math.max(...values)}`;
+---
+
+<PlotFigure
+  title={`Manchots ${species}`}
+  subtitle={`${measured.length} manchots mesurés, chaque point est un manchot`}
+  caption={`Figure : profondeur du culmen en fonction de sa longueur, espèce ${species}.`}
+  ariaLabel={`Nuage de points : profondeur du culmen en fonction de sa longueur, manchots ${species}`}
+  ariaDescription={`${measured.length} manchots. Longueur du culmen de ${range(lengths)} mm, profondeur de ${range(depths)} mm. Les données sont aussi disponibles dans le tableau sous le graphique.`}
+  options={{
+    grid: true,
+    x: { label: "Longueur du culmen (mm)" },
+    y: { label: "Profondeur du culmen (mm)" },
+    marks: [
+      Plot.dot(measured, {
+        x: "culmen_length_mm",
+        y: "culmen_depth_mm",
+        fill: "steelblue",
+        fillOpacity: 0.7,
+        r: 4,
+      }),
+    ],
+  }}
+/>
+
+<details>
+  <summary>Voir les données sous forme de tableau</summary>
+  <table>
+    <caption>Mesures du culmen des manchots {species}</caption>
+    <thead>
+      <tr>
+        <th scope="col">Île</th>
+        <th scope="col">Longueur du culmen (mm)</th>
+        <th scope="col">Profondeur du culmen (mm)</th>
+      </tr>
+    </thead>
+    <tbody>
+      {
+        speciesPenguins.map((penguin) => (
+          <tr>
+            <th scope="row">{penguin.island}</th>
+            <td>{penguin.culmen_length_mm ?? "n/d"}</td>
+            <td>{penguin.culmen_depth_mm ?? "n/d"}</td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</details>

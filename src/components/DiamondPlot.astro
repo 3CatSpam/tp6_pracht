@@ -1,0 +1,64 @@
+---
+import * as Plot from "@observablehq/plot";
+import diamonds from "../assets/diamonds_1000.json";
+import type { Dimension } from "../data/diamonds";
+import PlotFigure from "./PlotFigure.astro";
+
+interface Props {
+  dimension: Dimension;
+  value: string;
+}
+
+const { dimension, value } = Astro.props;
+
+const subset = diamonds.filter((diamond) => String(diamond[dimension.key]) === value);
+const carats = subset.map((diamond) => diamond.carat);
+const prices = subset.map((diamond) => diamond.price);
+const range = (values: number[]) => `${Math.min(...values)} à ${Math.max(...values)}`;
+const subject = `${dimension.label.toLowerCase()} ${value}`;
+---
+
+<PlotFigure
+  title={`Diamants, ${subject}`}
+  subtitle={`${subset.length} diamants, chaque point est un diamant`}
+  caption={`Figure : prix en fonction du poids, ${subject}.`}
+  ariaLabel={`Nuage de points : prix en fonction du poids, diamants de ${subject}`}
+  ariaDescription={`${subset.length} diamants. Poids de ${range(carats)} carats, prix de ${range(prices)} dollars. Les données sont aussi disponibles dans le tableau sous le graphique.`}
+  options={{
+    grid: true,
+    x: { label: "Poids (carats)" },
+    y: { label: "Prix ($)" },
+    marks: [
+      Plot.dot(subset, {
+        x: "carat",
+        y: "price",
+        fill: "steelblue",
+        fillOpacity: 0.6,
+        r: 3,
+      }),
+    ],
+  }}
+/>
+
+<details>
+  <summary>Voir les données sous forme de tableau</summary>
+  <table>
+    <caption>Poids et prix des diamants, {subject}</caption>
+    <thead>
+      <tr>
+        <th scope="col">Poids (carats)</th>
+        <th scope="col">Prix ($)</th>
+      </tr>
+    </thead>
+    <tbody>
+      {
+        subset.map((diamond) => (
+          <tr>
+            <td>{diamond.carat}</td>
+            <td>{diamond.price}</td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</details>

@@ -1,9 +1,20 @@
 ---
 import * as Plot from "@observablehq/plot";
 import { JSDOM } from "jsdom";
-const { options } = Astro.props;
 
-const plot = Plot.plot({ ...options, document: new JSDOM("").window.document });
+const { options = {}, title, subtitle, caption, ariaLabel, ariaDescription } = Astro.props;
+
+const accessibleOptions = Object.fromEntries(
+  Object.entries({ title, subtitle, caption, ariaLabel, ariaDescription }).filter(
+    ([, value]) => value !== undefined,
+  ),
+);
+
+const plot = Plot.plot({
+  ...options,
+  ...accessibleOptions,
+  document: new JSDOM("").window.document,
+});
 ---
 
 <div set:html={plot.outerHTML} />

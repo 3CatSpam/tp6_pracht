@@ -1,0 +1,78 @@
+---
+import * as Plot from "@observablehq/plot";
+import cars from "../../../assets/cars.json";
+import PlotFigure from "../../../components/PlotFigure.astro";
+import Layout from "../../../layouts/Layout.astro";
+
+export function getStaticPaths() {
+  const years = [...new Set(cars.map((car) => car.year))].sort((a, b) => a - b);
+  return years.map((year) => ({
+    params: { year: String(year) },
+    props: { yearCars: cars.filter((car) => car.year === year) },
+  }));
+}
+
+const { year } = Astro.params;
+const { yearCars } = Astro.props;
+
+const weights = yearCars.map((car) => car["weight (lb)"]);
+const powers = yearCars.map((car) => car["power (hp)"]);
+const range = (values: number[]) =>
+  `${Math.min(...values)} à ${Math.max(...values)}`;
+
+const title = `Puissance et poids des voitures de l'année ${year}`;
+
+const plotOptions = {
+  title,
+  subtitle: `${yearCars.length} voitures`,
+  caption: `puissance en fonction du poids, année ${year}.`,
+  ariaLabel: `puissance en fonction du poids, année ${year}`,
+  ariaDescription: `${yearCars.length} voitures. Poids de ${range(weights)} lb, puissance de ${range(powers)} hp. Les données sont aussi disponibles dans le tableau sous le graphique.`,
+  grid: true,
+  x: { label: "Poids (lb)" },
+  y: { label: "Puissance (hp)" },
+  marks: [
+    Plot.dot(yearCars, {
+      x: "weight (lb)",
+      y: "power (hp)",
+      fill: "steelblue",
+      r: 4,
+      fillOpacity: 0.7,
+    }),
+  ],
+};
+---
+
+<Layout title={title}>
+  <h1>Voitures de l'année {year}</h1>
+  <p>{yearCars.length} voiture(s) trouvée(s) pour l'année {year}</p>
+
+  <PlotFigure options={plotOptions} />
+
+  <details>
+    <summary>Voir les données sous forme de tableau</summary>
+    <table>
+      <caption>Poids et puissance des voitures de l'année {year}</caption>
+      <thead>
+        <tr>
+          <th scope="col">Modèle</th>
+          <th scope="col">Poids (lb)</th>
+          <th scope="col">Puissance (hp)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          yearCars.map((car) => (
+            <tr>
+              <th scope="row">{car.name}</th>
+              <td>{car["weight (lb)"]}</td>
+              <td>{car["power (hp)"]}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </details>
+
+  <p><a href="/">Retour à la liste des années</a></p>
+</Layout>

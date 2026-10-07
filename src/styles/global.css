@@ -1,1 +1,68 @@
 @import "tailwindcss";
+
+:root {
+	font-family: Arial, sans-serif;
+	color: #243447;
+	background: #f4f7f9;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+body {
+	margin: 0;
+}
+
+main {
+	@apply mx-auto w-[calc(100%-2rem)] max-w-[1100px] py-8;
+}
+
+h1 {
+	@apply mb-4 text-3xl font-bold;
+}
+
+h2 {
+	@apply mt-6 mb-2 text-2xl font-bold;
+}
+
+ul {
+	@apply my-4 list-disc pl-6;
+}
+
+a {
+	@apply font-bold text-[#176b87] underline hover:text-[#0f566b];
+}
+
+:focus-visible {
+	@apply outline-3 outline-offset-2 outline-[#176b87];
+}
+
+figure {
+	@apply my-4 rounded-lg border border-[#d9e2e8] bg-white p-4;
+}
+
+figcaption {
+	@apply mt-2 text-sm;
+}
+
+details {
+	@apply my-4;
+}
+
+summary {
+	@apply cursor-pointer font-bold;
+}
+
+table {
+	@apply mt-3 w-full border-collapse;
+}
+
+caption {
+	@apply pb-2 text-left font-bold;
+}
+
+th,
+td {
+	@apply border border-[#d9e2e8] bg-white px-3 py-1 text-left;
+}

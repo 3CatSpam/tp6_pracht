@@ -1,21 +1,23 @@
 ---
-import PlotFigure from "../components/PlotFigure.astro";
+import cars from "../assets/cars.json";
 import Layout from "../layouts/Layout.astro";
-import * as Plot from "@observablehq/plot";
-import penguins from "../assets/penguins.json";
+
+const years = [...new Set(cars.map((c) => c.year))].sort((a, b) => a - b);
 ---
 
-<Layout>
-  <h1 class="text-2xl">Test Astro et Plot (Observablehq)</h1>
-  <PlotFigure
-    options={{
-      marks: [
-        Plot.dot(penguins, {
-          x: "culmen_length_mm",
-          y: "culmen_depth_mm",
-          stroke: "species",
-        }),
-      ],
-    }}
-  />
+<Layout title="Voitures par année">
+  <h1>Voitures par année</h1>
+  <nav aria-label="Années">
+    <ul>
+      {
+        years.map((y) => (
+          <li>
+            <a href={`/cars/year/${y}`}>Année : {y}</a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+  <p><a href="/penguins">Manchots par espèce</a></p>
+  <p><a href="/diamonds">Diamants</a></p>
 </Layout>

@@ -1,0 +1,46 @@
+---
+import * as Plot from "@observablehq/plot";
+import PlotFigure from "../../components/PlotFigure.astro";
+import Layout from "../../layouts/Layout.astro";
+import diamonds from "../../assets/diamonds_1000.json";
+import { dimensions } from "../../data/diamonds";
+---
+
+<Layout title="Diamants">
+  <h1>Diamants</h1>
+
+  <PlotFigure
+    title="Tous les diamants"
+    subtitle={`${diamonds.length} diamants, chaque point est un diamant`}
+    caption="Figure : prix en fonction du poids, tous les diamants."
+    ariaLabel="Nuage de points : prix en fonction du poids, tous les diamants"
+    ariaDescription={`${diamonds.length} diamants. Le détail par taille, couleur et pureté est accessible avec les liens sous le graphique.`}
+    options={{
+      grid: true,
+      x: { label: "Poids (carats)" },
+      y: { label: "Prix ($)" },
+      marks: [
+        Plot.dot(diamonds, {
+          x: "carat",
+          y: "price",
+          fill: "steelblue",
+          fillOpacity: 0.6,
+          r: 3,
+        }),
+      ],
+    }}
+  />
+
+  <h2>Voir le détail</h2>
+  <nav aria-label="Dimensions">
+    <ul>
+      {
+        dimensions.map(({ key, label }) => (
+          <li>
+            <a href={`/diamonds/${key}`}>Par {label.toLowerCase()}</a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+</Layout>

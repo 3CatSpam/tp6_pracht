@@ -1,0 +1,54 @@
+---
+import * as Plot from "@observablehq/plot";
+import PlotFigure from "../../components/PlotFigure.astro";
+import Layout from "../../layouts/Layout.astro";
+import penguins from "../../assets/penguins.json";
+
+const speciesList = [...new Set(penguins.map(({ species }) => species))];
+const measured = penguins.filter(
+  (penguin) => penguin.culmen_length_mm !== null && penguin.culmen_depth_mm !== null,
+);
+---
+
+<Layout title="Manchots par espèce">
+  <h1>Manchots par espèce</h1>
+
+  <PlotFigure
+    title="Tous les manchots"
+    subtitle={`${measured.length} manchots mesurés, couleur et forme du point selon l'espèce`}
+    caption="Figure : profondeur du culmen en fonction de sa longueur, toutes espèces."
+    ariaLabel="Nuage de points : profondeur du culmen en fonction de sa longueur, selon l'espèce"
+    ariaDescription={`${measured.length} manchots répartis en ${speciesList.length} espèces : ${speciesList.join(", ")}. Un graphique par espèce est accessible avec les liens sous le graphique.`}
+    options={{
+      grid: true,
+      x: { label: "Longueur du culmen (mm)" },
+      y: { label: "Profondeur du culmen (mm)" },
+      color: { legend: true, domain: speciesList },
+      symbol: { domain: speciesList },
+      marks: [
+        Plot.dot(measured, {
+          x: "culmen_length_mm",
+          y: "culmen_depth_mm",
+          fill: "species",
+          symbol: "species",
+          fillOpacity: 0.7,
+          r: 4,
+        }),
+      ],
+    }}
+  />
+
+  <h2>Un graphique par espèce</h2>
+  <nav aria-label="Espèces">
+    <ul>
+      {
+        speciesList.map((species) => (
+          <li>
+            <a href={`/penguins/${species}`}>{species}</a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+  <p><a href="/penguins/slider">Voir tous les graphiques sur une seule page</a></p>
+</Layout>

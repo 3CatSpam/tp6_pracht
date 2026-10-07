@@ -1,0 +1,66 @@
+---
+import DiamondPlot from "../../../components/DiamondPlot.astro";
+import Layout from "../../../layouts/Layout.astro";
+import { dimensions, getValues, slugify } from "../../../data/diamonds";
+
+export function getStaticPaths() {
+  return dimensions.map((dimension) => ({
+    params: { dimension: dimension.key },
+    props: { dimension },
+  }));
+}
+
+const { dimension } = Astro.props;
+const values = getValues(dimension);
+const label = dimension.label.toLowerCase();
+---
+
+<Layout title={`Tous les diamants par ${label}`}>
+  <h1>Tous les diamants par {label}</h1>
+
+  <nav aria-label={`Valeurs de ${label}`}>
+    <ul>
+      {
+        values.map((value) => (
+          <li>
+            <a href={`#${slugify(value)}`}>{value}</a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+
+  <div class="slider" role="region" aria-label={`Graphiques par ${label}`} tabindex="0">
+    {
+      values.map((value) => (
+        <section class="slide" id={slugify(value)} aria-label={`${dimension.label} ${value}`}>
+          <DiamondPlot dimension={dimension} value={value} />
+        </section>
+      ))
+    }
+  </div>
+
+  <p><a href={`/diamonds/${dimension.key}`}>Retour à la liste</a></p>
+</Layout>
+
+<style>
+  nav ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    list-style: none;
+    padding: 0;
+  }
+
+  .slider {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+  }
+
+  .slide {
+    flex: 0 0 100%;
+    scroll-snap-align: start;
+  }
+</style>

@@ -1,0 +1,62 @@
+---
+import * as Plot from "@observablehq/plot";
+import PlotFigure from "../../../components/PlotFigure.astro";
+import Layout from "../../../layouts/Layout.astro";
+import diamonds from "../../../assets/diamonds_1000.json";
+import { dimensions, getValues, slugify } from "../../../data/diamonds";
+
+export function getStaticPaths() {
+  return dimensions.map((dimension) => ({
+    params: { dimension: dimension.key },
+    props: { dimension },
+  }));
+}
+
+const { dimension } = Astro.props;
+const values = getValues(dimension);
+const label = dimension.label.toLowerCase();
+---
+
+<Layout title={`Diamants par ${label}`}>
+  <h1>Diamants par {label}</h1>
+
+  <PlotFigure
+    title={`Tous les diamants, par ${label}`}
+    subtitle={`${diamonds.length} diamants, couleur et forme du point selon la ${label}`}
+    caption={`Figure : prix en fonction du poids, selon la ${label}.`}
+    ariaLabel={`Nuage de points : prix en fonction du poids, selon la ${label}`}
+    ariaDescription={`${diamonds.length} diamants répartis en ${values.length} groupes : ${values.join(", ")}. Un graphique par groupe est accessible avec les liens sous le graphique.`}
+    options={{
+      grid: true,
+      x: { label: "Poids (carats)" },
+      y: { label: "Prix ($)" },
+      color: { legend: true, domain: values },
+      symbol: { domain: values },
+      marks: [
+        Plot.dot(diamonds, {
+          x: "carat",
+          y: "price",
+          fill: dimension.key,
+          symbol: dimension.key,
+          fillOpacity: 0.7,
+          r: 3,
+        }),
+      ],
+    }}
+  />
+
+  <h2>Un graphique par valeur</h2>
+  <nav aria-label={`Valeurs de ${label}`}>
+    <ul>
+      {
+        values.map((value) => (
+          <li>
+            <a href={`/diamonds/${dimension.key}/${slugify(value)}`}>{value}</a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+  <p><a href={`/diamonds/${dimension.key}/slider`}>Voir tous les graphiques sur une seule page</a></p>
+  <p><a href="/diamonds">Retour aux dimensions</a></p>
+</Layout>
